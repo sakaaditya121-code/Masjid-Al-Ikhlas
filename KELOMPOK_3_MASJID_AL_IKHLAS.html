@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REMAS Al-Ikhlas – Sistem Manajemen</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#f8f7ff;}
+
+:root{
+  --purple-50:#f3f0ff;--purple-100:#ede8ff;--purple-200:#d4ccff;
+  --purple-300:#b8aaff;--purple-400:#9d87ff;--purple-500:#7c5cbf;
+  --purple-600:#6741d9;--purple-700:#5a35b8;--purple-800:#4c2d9c;
+  --purple-900:#3b2080;
+  --grad:linear-gradient(135deg,#7c5cbf 0%,#9d87ff 50%,#b8aaff 100%);
+  --grad2:linear-gradient(135deg,#6741d9 0%,#9d87ff 100%);
+  --shadow-sm:0 1px 3px rgba(100,65,200,.08);
+  --shadow-md:0 4px 16px rgba(100,65,200,.12);
+  --shadow-lg:0 8px 32px rgba(100,65,200,.18);
+}
+
+.app-wrap{display:flex;height:100vh;overflow:hidden;}
+
+/* Sidebar */
+.sidebar{width:256px;background:var(--grad);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+.sidebar-logo{padding:28px 20px 20px;border-bottom:1px solid rgba(255,255,255,.15);}
+.sidebar-logo-icon{width:44px;height:44px;background:rgba(255,255,255,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Amiri',serif;font-size:22px;color:#fff;margin-bottom:10px;}
+.sidebar-logo h1{font-size:13px;font-weight:700;color:#fff;line-height:1.3;}
+.sidebar-logo p{font-size:11px;color:rgba(255,255,255,.7);margin-top:2px;}
+.sidebar-nav{padding:16px 12px;flex:1;}
+.sidebar-section{font-size:10px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.08em;text-transform:uppercase;padding:8px 8px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:all .2s;color:rgba(255,255,255,.8);font-size:13.5px;font-weight:500;margin-bottom:2px;}
+.nav-item:hover{background:rgba(255,255,255,.15);color:#fff;}
+.nav-item.active{background:rgba(255,255,255,.25);color:#fff;font-weight:600;}
+.nav-item svg{width:18px;height:18px;flex-shrink:0;}
+.sidebar-footer{padding:16px;border-top:1px solid rgba(255,255,255,.15);}
+.user-card{display:flex;align-items:center;gap:10px;padding:10px;background:rgba(255,255,255,.12);border-radius:10px;}
+.avatar{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.avatar.lg{width:52px;height:52px;font-size:16px;}
+.avatar.xl{width:64px;height:64px;font-size:20px;}
+.user-card-info{flex:1;min-width:0;}
+.user-card-info .name{font-size:12.5px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.user-card-info .role{font-size:11px;color:rgba(255,255,255,.65);}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{height:60px;background:#fff;border-bottom:1px solid #ede8ff;display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0;box-shadow:var(--shadow-sm);}
+.topbar h2{font-size:18px;font-weight:700;color:#3b2080;}
+.content{flex:1;overflow-y:auto;padding:24px;background:#f8f7ff;}
+
+/* Cards */
+.card{background:#fff;border-radius:16px;box-shadow:var(--shadow-sm);border:1px solid #ede8ff;}
+.card-header{padding:18px 20px;border-bottom:1px solid #f3f0ff;display:flex;align-items:center;justify-content:space-between;}
+.card-header h3{font-size:15px;font-weight:700;color:#3b2080;}
+.card-body{padding:20px;}
+
+/* Stat cards */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;}
+.stat-card{background:#fff;border-radius:16px;padding:20px;border:1px solid #ede8ff;box-shadow:var(--shadow-sm);display:flex;align-items:flex-start;gap:14px;}
+.stat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.stat-icon.purple{background:#ede8ff;}
+.stat-icon.green{background:#e6f9f0;}
+.stat-icon.orange{background:#fff3e0;}
+.stat-icon.blue{background:#e3f0ff;}
+.stat-val{font-size:28px;font-weight:800;color:#3b2080;line-height:1;}
+.stat-label{font-size:12px;color:#888;margin-top:4px;}
+.stat-sub{font-size:11.5px;color:#7c5cbf;margin-top:6px;font-weight:500;}
+
+/* Table */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+th{background:#f8f7ff;font-size:11.5px;font-weight:600;color:#7c5cbf;text-transform:uppercase;letter-spacing:.05em;padding:10px 14px;text-align:left;border-bottom:1px solid #ede8ff;}
+td{padding:12px 14px;border-bottom:1px solid #f8f7ff;color:#333;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#faf9ff;}
+
+/* Badge */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:600;}
+.badge.active,.badge.hadir{background:#e6f9f0;color:#15803d;}
+.badge.alumni{background:#f3f0ff;color:#6741d9;}
+.badge.izin{background:#fff8e1;color:#b45309;}
+.badge.alpha{background:#fef2f2;color:#dc2626;}
+.badge.selesai{background:#e6f9f0;color:#15803d;}
+.badge.akan-datang{background:#ede8ff;color:#6741d9;}
+.badge.kajian{background:#ede8ff;color:#6741d9;}
+.badge.sosial{background:#e6f9f0;color:#15803d;}
+.badge.rapat{background:#fff8e1;color:#b45309;}
+.badge.seni{background:#fce7f3;color:#9d174d;}
+.badge.olahraga{background:#e0f2fe;color:#0369a1;}
+.badge.lainnya{background:#f3f4f6;color:#4b5563;}
+.badge.nasional{background:#fef3c7;color:#92400e;}
+.badge.provinsi{background:#ede9fe;color:#5b21b6;}
+.badge.kota{background:#dbeafe;color:#1e40af;}
+.badge.kecamatan{background:#d1fae5;color:#065f46;}
+.badge.keagamaan{background:#fef3c7;color:#92400e;}
+.badge.akademik{background:#dbeafe;color:#1e40af;}
+.badge.kepemimpinan{background:#ede9fe;color:#5b21b6;}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .18s;font-family:inherit;}
+.btn-primary{background:var(--grad2);color:#fff;box-shadow:0 2px 8px rgba(103,65,217,.3);}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px);}
+.btn-outline{background:#fff;color:#6741d9;border:1.5px solid #d4ccff;}
+.btn-outline:hover{background:#f3f0ff;}
+.btn-danger{background:#fef2f2;color:#dc2626;border:1px solid #fecaca;}
+.btn-danger:hover{background:#fee2e2;}
+.btn-sm{padding:5px 11px;font-size:12px;}
+.btn-icon{padding:7px;border-radius:8px;}
+
+/* Form */
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:12.5px;font-weight:600;color:#4c2d9c;margin-bottom:6px;}
+.form-control{width:100%;padding:9px 13px;border:1.5px solid #d4ccff;border-radius:9px;font-size:13.5px;color:#333;outline:none;transition:border .18s;background:#fff;font-family:inherit;}
+.form-control:focus{border-color:#7c5cbf;box-shadow:0 0 0 3px rgba(124,92,191,.12);}
+select.form-control{cursor:pointer;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+textarea.form-control{resize:vertical;}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(60,30,130,.35);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal{background:#fff;border-radius:20px;width:100%;max-width:540px;box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto;}
+.modal-header{padding:20px 24px;border-bottom:1px solid #f3f0ff;display:flex;align-items:center;justify-content:space-between;}
+.modal-header h3{font-size:16px;font-weight:700;color:#3b2080;}
+.modal-body{padding:20px 24px;}
+.modal-footer{padding:16px 24px;border-top:1px solid #f3f0ff;display:flex;justify-content:flex-end;gap:10px;}
+
+/* Login */
+.login-page{min-height:100vh;background:var(--grad);display:flex;align-items:center;justify-content:center;padding:20px;}
+.login-card{background:#fff;border-radius:24px;padding:40px;width:100%;max-width:420px;box-shadow:var(--shadow-lg);}
+.login-logo{text-align:center;margin-bottom:28px;}
+.login-logo .icon{width:72px;height:72px;background:var(--grad);border-radius:20px;display:flex;align-items:center;justify-content:center;font-family:'Amiri',serif;font-size:36px;color:#fff;margin:0 auto 12px;}
+.login-logo h1{font-size:22px;font-weight:800;color:#3b2080;}
+.login-logo p{font-size:13px;color:#888;margin-top:4px;}
+
+/* Search */
+.search-wrap{position:relative;}
+.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9d87ff;width:15px;height:15px;pointer-events:none;}
+.search-input{width:100%;padding:8px 12px 8px 34px;border:1.5px solid #d4ccff;border-radius:9px;font-size:13px;outline:none;background:#f8f7ff;font-family:inherit;}
+.search-input:focus{border-color:#7c5cbf;background:#fff;}
+
+/* Notification */
+.notif-dot{width:8px;height:8px;background:#ef4444;border-radius:50%;position:absolute;top:6px;right:6px;}
+.notif-panel{position:absolute;right:0;top:44px;width:320px;background:#fff;border-radius:14px;box-shadow:var(--shadow-lg);border:1px solid #ede8ff;z-index:100;overflow:hidden;}
+.notif-item{padding:14px 16px;border-bottom:1px solid #f8f7ff;cursor:pointer;}
+.notif-item:hover{background:#faf9ff;}
+.notif-item:last-child{border-bottom:none;}
+.notif-item .notif-title{font-size:13px;font-weight:600;color:#3b2080;}
+.notif-item .notif-msg{font-size:12px;color:#666;margin-top:2px;}
+.notif-item .notif-time{font-size:11px;color:#9d87ff;margin-top:4px;}
+.notif-item.unread{background:#faf8ff;}
+
+/* Progress bar */
+.progress-bar{height:8px;background:#ede8ff;border-radius:99px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--grad2);border-radius:99px;transition:width .5s ease;}
+
+/* Absensi grid */
+.absensi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+.absensi-card{background:#fff;border:1.5px solid #ede8ff;border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;}
+.absensi-card.hadir{border-color:#86efac;}
+.absensi-card.izin{border-color:#fcd34d;}
+.absensi-card.alpha{border-color:#fca5a5;}
+.absensi-name{font-size:13px;font-weight:600;color:#3b2080;flex:1;}
+.absensi-status{display:flex;gap:4px;}
+.status-btn{padding:4px 8px;border-radius:6px;font-size:11px;font-weight:600;border:none;cursor:pointer;transition:all .15s;}
+.status-btn.h{background:#dcfce7;color:#16a34a;}.status-btn.h:hover,.status-btn.h.sel{background:#16a34a;color:#fff;}
+.status-btn.i{background:#fef9c3;color:#ca8a04;}.status-btn.i:hover,.status-btn.i.sel{background:#ca8a04;color:#fff;}
+.status-btn.a{background:#fee2e2;color:#dc2626;}.status-btn.a:hover,.status-btn.a.sel{background:#dc2626;color:#fff;}
+
+/* Dashboard charts */
+.chart-bar-wrap{display:flex;flex-direction:column;gap:10px;}
+.chart-bar-row{display:flex;align-items:center;gap:10px;}
+.chart-bar-label{font-size:12px;color:#666;width:80px;flex-shrink:0;text-align:right;}
+.chart-bar-outer{flex:1;height:10px;background:#f3f0ff;border-radius:99px;overflow:hidden;}
+.chart-bar-inner{height:100%;background:var(--grad2);border-radius:99px;}
+.chart-bar-val{font-size:12px;font-weight:600;color:#6741d9;width:30px;text-align:right;}
+
+/* Divisi colors */
+.divisi-dakwah{background:#ede8ff;color:#6741d9;}
+.divisi-sosial{background:#e6f9f0;color:#15803d;}
+.divisi-olahraga{background:#e0f2fe;color:#0369a1;}
+.divisi-seni{background:#fce7f3;color:#9d174d;}
+.divisi-pendidikan{background:#fff8e1;color:#b45309;}
+.divisi-humas{background:#f3f4f6;color:#4b5563;}
+
+.empty-state{text-align:center;padding:48px 20px;color:#aaa;}
+.empty-state svg{width:48px;height:48px;margin:0 auto 12px;display:block;opacity:.4;}
+.empty-state p{font-size:14px;}
+
+.tag-role-admin{background:#fce7f3;color:#9d174d;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;}
+.tag-role-pembina{background:#ede8ff;color:#6741d9;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;}
+.tag-role-anggota{background:#e6f9f0;color:#15803d;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;}
+
+.alert{padding:10px 14px;border-radius:9px;font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.alert-success{background:#e6f9f0;color:#15803d;border:1px solid #86efac;}
+.alert-error{background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;}
+.alert-info{background:#ede8ff;color:#6741d9;border:1px solid #b8aaff;}
+
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#6741d9;cursor:pointer;font-weight:600;margin-bottom:16px;background:none;border:none;font-family:inherit;}
+.back-btn:hover{color:#4c2d9c;}
+
+/* Toast */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.toast-item{min-width:260px;box-shadow:0 4px 16px rgba(0,0,0,.12);animation:fadeIn .25s;}
+
+/* Page sections */
+.page{display:none;}
+.page.active{display:block;}
+
+/* Detail view */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin-top:16px;}
+
+/* Arsitektur */
+pre.code-block{background:#1e1b4b;color:#c4b5fd;padding:16px;border-radius:10px;font-size:12px;overflow-x:auto;line-height:1.7;font-family:monospace;white-space:pre-wrap;}
+
+@media(max-width:768px){
+  .sidebar{width:200px;}
+  .form-row{grid-template-columns:1fr;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:600px){
+  .sidebar{display:none;}
+  .stats-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ========== LOGIN PAGE ========== -->
+<div id="login-page" class="login-page">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="icon">☾</div>
+      <h1>REMAS Al-Ikhlas</h1>
+      <p>Sistem Manajemen Remaja Masjid</p>
+    </div>
+    <div id="login-error" class="alert alert-error" style="display:none;"></div>
+    <div class="form-group">
+      <label>Username</label>
+      <input class="form-control" id="login-username" placeholder="Masukkan username" />
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" class="form-control" id="login-password" placeholder="Masukkan password" />
+    </div>
+    <button class="btn btn-primary" id="login-btn" style="width:100%;justify-content:center;padding:11px;font-size:14px;margin-top:4px;">Masuk</button>
+    <div style="margin-top:20px;padding:14px;background:#f8f7ff;border-radius:10px;font-size:12.5px;color:#666;">
+      <p style="font-weight:600;color:#6741d9;margin-bottom:6px;">Demo Akun:</p>
+      <p>Admin: <b>admin</b> / admin123</p>
+      <p>Pembina: <b>pembina1</b> / pass123</p>
+      <p>Anggota: <b>anggota1</b> / pass123</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== APP ========== -->
+<div id="app-wrap" class="app-wrap" style="display:none;">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">☾</div>
+      <h1>REMAS Al-Ikhlas</h1>
+      <p>Sistem Manajemen</p>
+    </div>
+    <div class="sidebar-nav" id="sidebar-nav"></div>
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="avatar" id="sb-avatar"></div>
+        <div class="user-card-info">
+          <div class="name" id="sb-name"></div>
+          <div class="role" id="sb-role"></div>
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm" id="logout-btn" style="width:100%;justify-content:center;margin-top:10px;color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.1);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Keluar
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <h2 id="page-title">Dashboard</h2>
+      <div style="flex:1;"></div>
+      <div style="position:relative;">
+        <button class="btn btn-outline btn-icon" id="notif-btn" style="position:relative;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-dot" id="notif-dot"></span>
+        </button>
+        <div class="notif-panel" id="notif-panel" style="display:none;">
+          <div style="padding:12px 16px;border-bottom:1px solid #f3f0ff;font-weight:700;color:#3b2080;font-size:14px;">Notifikasi</div>
+          <div class="notif-item unread">
+            <div class="notif-title">Kajian Tafsir Besok</div>
+            <div class="notif-msg">Jangan lupa kajian rutin besok malam pukul 19:30 di lantai 2.</div>
+            <div class="notif-time">1 jam lalu</div>
+          </div>
+          <div class="notif-item unread">
+            <div class="notif-title">Anggota Baru Terdaftar</div>
+            <div class="notif-msg">Muhammad Rizki telah mendaftar sebagai anggota baru divisi Dakwah.</div>
+            <div class="notif-time">3 jam lalu</div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-title">Absensi Bakti Sosial</div>
+            <div class="notif-msg">Absensi kegiatan Bakti Sosial Ramadhan telah berhasil disimpan.</div>
+            <div class="notif-time">2 hari lalu</div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-title">Prestasi Baru</div>
+            <div class="notif-msg">Selamat! Abdullah Hasan meraih juara di tingkat Provinsi.</div>
+            <div class="notif-time">1 minggu lalu</div>
+          </div>
+        </div>
+      </div>
+      <div id="topbar-welcome" style="font-size:13px;color:#888;"></div>
+    </div>
+
+    <div class="content" id="main-content">
+      <!-- Pages injected here -->
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- MODAL CONTAINER -->
+<div id="modal-container"></div>
+
+<script>
+// ==================== DATA ====================
+const MOCK_USERS = [
+  {id:1,username:"admin",password:"admin123",role:"admin",name:"Ust. Ahmad Fauzi",email:"admin@remajamasjid.id",phone:"081234567890",jabatan:"Pembina Utama",avatar:"AF"},
+  {id:2,username:"pembina1",password:"pass123",role:"pembina",name:"Ibu Siti Rahayu",email:"siti@remajamasjid.id",phone:"081298765432",jabatan:"Pembina Putri",avatar:"SR"},
+  {id:3,username:"anggota1",password:"pass123",role:"anggota",name:"Muhammad Rizki",email:"rizki@email.com",phone:"085612345678",jabatan:"Anggota",avatar:"MR",divisi:"Dakwah",angkatan:"2022"},
+  {id:4,username:"anggota2",password:"pass123",role:"anggota",name:"Fatimah Azzahra",email:"fatimah@email.com",phone:"087712345678",jabatan:"Anggota",avatar:"FA",divisi:"Sosial",angkatan:"2023"},
+];
+
+let anggotaData = [
+  {id:1,nama:"Muhammad Rizki",nik:"3271010101020001",ttl:"Jakarta, 01-01-2002",alamat:"Jl. Mawar No. 1, Jakarta",telepon:"085612345678",email:"rizki@email.com",divisi:"Dakwah",angkatan:"2022",status:"Aktif",avatar:"MR",gender:"L",userId:3},
+  {id:2,nama:"Fatimah Azzahra",nik:"3271015505030002",ttl:"Jakarta, 15-05-2003",alamat:"Jl. Melati No. 5, Jakarta",telepon:"087712345678",email:"fatimah@email.com",divisi:"Sosial",angkatan:"2023",status:"Aktif",avatar:"FA",gender:"P",userId:4},
+  {id:3,nama:"Abdullah Hasan",nik:"3271012202010003",ttl:"Depok, 22-02-2001",alamat:"Jl. Anggrek No. 3, Depok",telepon:"089912345678",email:"abdullah@email.com",divisi:"Olahraga",angkatan:"2021",status:"Aktif",avatar:"AH",gender:"L",userId:null},
+  {id:4,nama:"Khadijah Nur",nik:"3271011010040004",ttl:"Bogor, 10-10-2004",alamat:"Jl. Cempaka No. 7, Bogor",telepon:"082212345678",email:"khadijah@email.com",divisi:"Dakwah",angkatan:"2023",status:"Aktif",avatar:"KN",gender:"P",userId:null},
+  {id:5,nama:"Umar Faruk",nik:"3271010303000005",ttl:"Jakarta, 03-03-2000",alamat:"Jl. Flamboyan No. 9, Jakarta",telepon:"083312345678",email:"umar@email.com",divisi:"Seni",angkatan:"2020",status:"Alumni",avatar:"UF",gender:"L",userId:null},
+];
+
+let kegiatanData = [
+  {id:1,nama:"Kajian Tafsir Al-Quran",tanggal:"2025-07-10",waktu:"19:30",lokasi:"Masjid Al-Ikhlas Lt. 2",deskripsi:"Kajian rutin mingguan membahas tafsir juz 30",kategori:"Kajian",status:"Akan Datang",pembina:"Ust. Ahmad Fauzi"},
+  {id:2,nama:"Bakti Sosial Ramadhan",tanggal:"2025-03-15",waktu:"08:00",lokasi:"Kelurahan Cempaka",deskripsi:"Pembagian sembako kepada warga kurang mampu",kategori:"Sosial",status:"Selesai",pembina:"Ibu Siti Rahayu"},
+  {id:3,nama:"Rapat Pengurus Bulanan",tanggal:"2025-07-01",waktu:"16:00",lokasi:"Sekretariat REMAS",deskripsi:"Evaluasi kegiatan bulan lalu & perencanaan",kategori:"Rapat",status:"Selesai",pembina:"Ust. Ahmad Fauzi"},
+  {id:4,nama:"Lomba Seni Islami",tanggal:"2025-08-17",waktu:"09:00",lokasi:"Aula Masjid",deskripsi:"Lomba kaligrafi, nasyid, dan busana muslim",kategori:"Seni",status:"Akan Datang",pembina:"Ibu Siti Rahayu"},
+  {id:5,nama:"Pesantren Kilat",tanggal:"2025-06-20",waktu:"07:00",lokasi:"Masjid Al-Ikhlas",deskripsi:"Kegiatan intensif belajar agama selama 3 hari",kategori:"Kajian",status:"Selesai",pembina:"Ust. Ahmad Fauzi"},
+];
+
+let absensiData = [
+  {id:1,kegiatanId:2,anggotaId:1,status:"Hadir",waktuAbsen:"08:05",keterangan:""},
+  {id:2,kegiatanId:2,anggotaId:2,status:"Hadir",waktuAbsen:"08:10",keterangan:""},
+  {id:3,kegiatanId:2,anggotaId:3,status:"Izin",waktuAbsen:"-",keterangan:"Sakit"},
+  {id:4,kegiatanId:2,anggotaId:4,status:"Hadir",waktuAbsen:"08:00",keterangan:""},
+  {id:5,kegiatanId:3,anggotaId:1,status:"Hadir",waktuAbsen:"16:05",keterangan:""},
+  {id:6,kegiatanId:3,anggotaId:3,status:"Hadir",waktuAbsen:"16:00",keterangan:""},
+  {id:7,kegiatanId:5,anggotaId:1,status:"Hadir",waktuAbsen:"07:10",keterangan:""},
+  {id:8,kegiatanId:5,anggotaId:2,status:"Hadir",waktuAbsen:"07:15",keterangan:""},
+  {id:9,kegiatanId:5,anggotaId:4,status:"Alpha",waktuAbsen:"-",keterangan:""},
+];
+
+let prestasiData = [
+  {id:1,anggotaId:1,nama:"Juara 1 MTQ Tingkat Kecamatan",tanggal:"2024-08-20",kategori:"Keagamaan",tingkat:"Kecamatan",keterangan:"Cabang Tilawah Putra"},
+  {id:2,anggotaId:2,nama:"Juara 2 Kaligrafi Islami",tanggal:"2024-10-05",kategori:"Seni",tingkat:"Kota",keterangan:"Kategori Naskah"},
+  {id:3,anggotaId:3,nama:"Peserta Terbaik Diklat Kepemimpinan",tanggal:"2025-01-15",kategori:"Kepemimpinan",tingkat:"Provinsi",keterangan:"FORMAS Jakarta"},
+  {id:4,anggotaId:1,nama:"Hafiz Quran 10 Juz",tanggal:"2025-03-10",kategori:"Keagamaan",tingkat:"Nasional",keterangan:"Bimbingan Ust. Ahmad"},
+];
+
+const DIVISI_LIST = ["Dakwah","Sosial","Olahraga","Seni","Pendidikan","Humas"];
+const KATEGORI_KEGIATAN = ["Kajian","Sosial","Rapat","Seni","Olahraga","Lainnya"];
+
+let currentUser = null;
+let currentPage = "dashboard";
+let notifRead = false;
+
+// ==================== HELPERS ====================
+function getBadgeClass(val) {
+  const map = {Aktif:"active",Alumni:"alumni",Hadir:"hadir",Izin:"izin",Alpha:"alpha",Selesai:"selesai","Akan Datang":"akan-datang",Kajian:"kajian",Sosial:"sosial",Rapat:"rapat",Seni:"seni",Olahraga:"olahraga",Lainnya:"lainnya",Nasional:"nasional",Provinsi:"provinsi",Kota:"kota",Kecamatan:"kecamatan",Keagamaan:"keagamaan",Akademik:"akademik",Kepemimpinan:"kepemimpinan",Internasional:"nasional"};
+  return map[val] || "";
+}
+function getDivisiClass(d) { return d ? `divisi-${d.toLowerCase()}` : ""; }
+function formatDate(d) {
+  if (!d) return "-";
+  const [y,m,dd] = d.split("-");
+  const months = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+  return `${dd} ${months[parseInt(m)-1]} ${y}`;
+}
+function isAdmin() { return currentUser && (currentUser.role==="admin"||currentUser.role==="pembina"); }
+function esc(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+function toast(msg, type="success") {
+  const c = document.getElementById("toast-container");
+  const id = "t"+Date.now();
+  const icon = type==="success"?"✓":type==="error"?"✕":"ℹ";
+  const el = document.createElement("div");
+  el.id = id;
+  el.className = `alert alert-${type} toast-item`;
+  el.textContent = icon+" "+msg;
+  c.appendChild(el);
+  setTimeout(()=>{const e=document.getElementById(id);if(e)e.remove();},3000);
+}
+
+function showModal(html) {
+  const c = document.getElementById("modal-container");
+  c.innerHTML = html;
+  c.querySelector(".modal-overlay").addEventListener("click", e => {
+    if(e.target === e.currentTarget) closeModal();
+  });
+}
+function closeModal() {
+  document.getElementById("modal-container").innerHTML = "";
+}
+
+// ==================== NAV ====================
+const NAV_ITEMS = [
+  {id:"dashboard",label:"Dashboard",group:"Utama",icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>'},
+  {id:"anggota",label:"Data Anggota",group:"Utama",icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'},
+  {id:"kegiatan",label:"Kegiatan & Absensi",group:"Utama",icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'},
+  {id:"prestasi",label:"Prestasi",group:"Utama",icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'},
+  {id:"laporan",label:"Laporan",group:"Admin",adminOnly:true,icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>'},
+  {id:"arsitektur",label:"Arsitektur & API",group:"Admin",adminOnly:true,icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>'},
+];
+const PAGE_TITLES = {dashboard:"Dashboard",anggota:"Data Anggota",kegiatan:"Kegiatan & Absensi",prestasi:"Prestasi",laporan:"Laporan & Backup",arsitektur:"Arsitektur Backend & API"};
+
+function renderSidebar() {
+  const nav = document.getElementById("sidebar-nav");
+  const items = NAV_ITEMS.filter(n => !n.adminOnly || isAdmin());
+  const groups = [...new Set(items.map(n=>n.group))];
+  nav.innerHTML = groups.map(g=>`
+    <div class="sidebar-section">${esc(g)}</div>
+    ${items.filter(n=>n.group===g).map(n=>`
+      <div class="nav-item${currentPage===n.id?" active":""}" data-page="${n.id}">
+        ${n.icon}${esc(n.label)}
+      </div>`).join("")}
+  `).join("");
+  nav.querySelectorAll(".nav-item").forEach(el=>{
+    el.addEventListener("click",()=>navigateTo(el.dataset.page));
+  });
+  document.getElementById("sb-avatar").textContent = currentUser.avatar;
+  document.getElementById("sb-name").textContent = currentUser.name;
+  document.getElementById("sb-role").innerHTML = `<span class="tag-role-${currentUser.role}">${currentUser.role}</span>`;
+  document.getElementById("topbar-welcome").innerHTML = `Selamat datang, <b style="color:#6741d9">${esc(currentUser.name.split(" ")[0])}</b>`;
+}
+
+function navigateTo(page) {
+  currentPage = page;
+  document.getElementById("page-title").textContent = PAGE_TITLES[page]||page;
+  renderSidebar();
+  renderPage();
+}
+
+// ==================== LOGIN ====================
+document.getElementById("login-btn").addEventListener("click", doLogin);
+document.getElementById("login-password").addEventListener("keydown", e=>{ if(e.key==="Enter") doLogin(); });
+document.getElementById("login-username").addEventListener("keydown", e=>{ if(e.key==="Enter") doLogin(); });
+
+function doLogin() {
+  const u = document.getElementById("login-username").value;
+  const p = document.getElementById("login-password").value;
+  const btn = document.getElementById("login-btn");
+  btn.textContent = "Memverifikasi...";
+  btn.disabled = true;
+  setTimeout(()=>{
+    const user = MOCK_USERS.find(x=>x.username===u&&x.password===p);
+    if(user){
+      currentUser=user;
+      document.getElementById("login-page").style.display="none";
+      document.getElementById("app-wrap").style.display="flex";
+      renderSidebar();
+      navigateTo("dashboard");
+    } else {
+      const err=document.getElementById("login-error");
+      err.textContent="Username atau password salah.";
+      err.style.display="flex";
+    }
+    btn.textContent="Masuk";
+    btn.disabled=false;
+  },700);
+}
+
+document.getElementById("logout-btn").addEventListener("click",()=>{
+  currentUser=null;
+  document.getElementById("app-wrap").style.display="none";
+  document.getElementById("login-page").style.display="flex";
+  document.getElementById("login-username").value="";
+  document.getElementById("login-password").value="";
+  document.getElementById("login-error").style.display="none";
+});
+
+// Notifications
+document.getElementById("notif-btn").addEventListener("click",()=>{
+  const p=document.getElementById("notif-panel");
+  p.style.display=p.style.display==="none"?"block":"none";
+  notifRead=true;
+  document.getElementById("notif-dot").style.display="none";
+});
+document.getElementById("main-content").addEventListener("click",()=>{
+  document.getElementById("notif-panel").style.display="none";
+});
+
+// ==================== RENDER PAGE ====================
+function renderPage() {
+  const c = document.getElementById("main-content");
+  if(currentPage==="dashboard") c.innerHTML = renderDashboard();
+  else if(currentPage==="anggota") { c.innerHTML = renderAnggota(); bindAnggota(); }
+  else if(currentPage==="kegiatan") { c.innerHTML = renderKegiatan(); bindKegiatan(); }
+  else if(currentPage==="prestasi") { c.innerHTML = renderPrestasi(); bindPrestasi(); }
+  else if(currentPage==="laporan") { c.innerHTML = renderLaporan(); bindLaporan(); }
+  else if(currentPage==="arsitektur") c.innerHTML = renderArsitektur();
+}
+
+// ==================== DASHBOARD ====================
+function renderDashboard() {
+  const totalAnggota = anggotaData.filter(a=>a.status==="Aktif").length;
+  const kegiatanBulanIni = kegiatanData.filter(k=>k.tanggal.startsWith("2025")).length;
+  const totalHadir = absensiData.filter(a=>a.status==="Hadir").length;
+  const totalAbsensi = absensiData.length;
+  const participasiRate = totalAbsensi>0?Math.round((totalHadir/totalAbsensi)*100):0;
+  const ang2023 = anggotaData.filter(a=>a.angkatan==="2023").length;
+  const kAkanDatang = kegiatanData.filter(k=>k.status==="Akan Datang").length;
+  const prestNasional = prestasiData.filter(p=>p.tingkat==="Nasional").length;
+
+  const divisiStats = DIVISI_LIST.map(d=>({nama:d,count:anggotaData.filter(a=>a.divisi===d&&a.status==="Aktif").length})).filter(d=>d.count>0);
+  const maxDiv = Math.max(...divisiStats.map(d=>d.count),1);
+  const mendatang = kegiatanData.filter(k=>k.status==="Akan Datang").slice(0,3);
+  const selesaiK = kegiatanData.filter(k=>k.status==="Selesai");
+
+  return `
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="#6741d9" stroke-width="2" width="24" height="24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <div><div class="stat-val">${totalAnggota}</div><div class="stat-label">Anggota Aktif</div><div class="stat-sub">+${ang2023} angkatan 2023</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2" width="24" height="24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <div><div class="stat-val">${kegiatanBulanIni}</div><div class="stat-label">Total Kegiatan 2025</div><div class="stat-sub">${kAkanDatang} akan datang</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" width="24" height="24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div><div class="stat-val">${participasiRate}%</div><div class="stat-label">Tingkat Partisipasi</div><div class="stat-sub">${totalHadir} dari ${totalAbsensi} absensi</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2" width="24" height="24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+      <div><div class="stat-val">${prestasiData.length}</div><div class="stat-label">Prestasi</div><div class="stat-sub">${prestNasional} tingkat nasional</div></div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="card">
+      <div class="card-header"><h3>Distribusi Anggota per Divisi</h3></div>
+      <div class="card-body">
+        <div class="chart-bar-wrap">
+          ${divisiStats.map(d=>`
+          <div class="chart-bar-row">
+            <div class="chart-bar-label">${esc(d.nama)}</div>
+            <div class="chart-bar-outer"><div class="chart-bar-inner" style="width:${Math.round((d.count/maxDiv)*100)}%"></div></div>
+            <div class="chart-bar-val">${d.count}</div>
+          </div>`).join("")}
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Kegiatan Mendatang</h3></div>
+      <div class="card-body">
+        ${mendatang.length===0?`<div class="empty-state"><p>Tidak ada kegiatan mendatang</p></div>`:mendatang.map(k=>`
+        <div style="display:flex;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #f8f7ff;">
+          <div style="width:44px;height:44px;background:#ede8ff;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#6741d9;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <div style="flex:1;">
+            <p style="font-size:13.5px;font-weight:600;color:#3b2080;">${esc(k.nama)}</p>
+            <p style="font-size:12px;color:#888;margin-top:2px;">${formatDate(k.tanggal)} · ${esc(k.waktu)}</p>
+            <p style="font-size:12px;color:#9d87ff;margin-top:2px;">📍 ${esc(k.lokasi)}</p>
+          </div>
+          <span class="badge ${getBadgeClass(k.kategori)}">${esc(k.kategori)}</span>
+        </div>`).join("")}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Tingkat Partisipasi Kegiatan</h3></div>
+      <div class="card-body">
+        ${selesaiK.map(k=>{
+          const abs=absensiData.filter(a=>a.kegiatanId===k.id);
+          const hadir=abs.filter(a=>a.status==="Hadir").length;
+          const pct=abs.length>0?Math.round((hadir/abs.length)*100):0;
+          return `<div style="margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+              <span style="font-size:12.5px;color:#444;font-weight:500;">${esc(k.nama)}</span>
+              <span style="font-size:12.5px;font-weight:700;color:#6741d9;">${pct}%</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+          </div>`;
+        }).join("")}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Prestasi Terbaru</h3></div>
+      <div class="card-body">
+        ${prestasiData.slice(0,4).map(p=>{
+          const a=anggotaData.find(x=>x.id===p.anggotaId);
+          return `<div style="display:flex;gap:10px;margin-bottom:12px;align-items:center;">
+            <div class="avatar" style="background:var(--grad);width:34px;height:34px;font-size:11px;">${esc(a?.avatar||"?")}</div>
+            <div style="flex:1;">
+              <p style="font-size:13px;font-weight:600;color:#333;">${esc(p.nama)}</p>
+              <p style="font-size:12px;color:#888;">${esc(a?.nama||"-")} · ${formatDate(p.tanggal)}</p>
+            </div>
+            <span class="badge ${getBadgeClass(p.tingkat)}">${esc(p.tingkat)}</span>
+          </div>`;
+        }).join("")}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ==================== ANGGOTA ====================
+let anggotaSearch="", anggotaFilterDiv="", anggotaFilterStat="", anggotaViewId=null;
+
+function renderAnggota() {
+  if(anggotaViewId!==null) return renderAnggotaDetail();
+  const filtered = anggotaData.filter(a=>
+    (a.nama.toLowerCase().includes(anggotaSearch.toLowerCase())||a.email.toLowerCase().includes(anggotaSearch.toLowerCase()))&&
+    (anggotaFilterDiv===""||a.divisi===anggotaFilterDiv)&&
+    (anggotaFilterStat===""||a.status===anggotaFilterStat)
+  );
+  return `
+  <div class="card">
+    <div class="card-header">
+      <h3>Data Anggota (${filtered.length})</h3>
+      <div style="display:flex;gap:8px;">
+        ${isAdmin()?`<button class="btn btn-primary btn-sm" id="btn-add-anggota"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Tambah</button>`:""}
+      </div>
+    </div>
+    <div class="card-body" style="padding-top:12px;">
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+        <div class="search-wrap" style="flex:1;min-width:200px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="search-input" id="anggota-search" placeholder="Cari anggota..." value="${esc(anggotaSearch)}" />
+        </div>
+        <select class="form-control" id="anggota-div" style="width:auto;">
+          <option value="">Semua Divisi</option>
+          ${DIVISI_LIST.map(d=>`<option value="${d}"${anggotaFilterDiv===d?" selected":""}>${d}</option>`).join("")}
+        </select>
+        <select class="form-control" id="anggota-stat" style="width:auto;">
+          <option value="">Semua Status</option>
+          <option value="Aktif"${anggotaFilterStat==="Aktif"?" selected":""}>Aktif</option>
+          <option value="Alumni"${anggotaFilterStat==="Alumni"?" selected":""}>Alumni</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Anggota</th><th>Divisi</th><th>Kontak</th><th>Angkatan</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody>
+            ${filtered.length===0?`<tr><td colspan="6" style="text-align:center;color:#aaa;padding:32px;">Tidak ada data</td></tr>`:
+              filtered.map(a=>`
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:10px;">
+                  <div class="avatar" style="background:var(--grad);">${esc(a.avatar)}</div>
+                  <div><p style="font-weight:600;color:#3b2080;">${esc(a.nama)}</p><p style="font-size:11.5px;color:#888;">${a.gender==="L"?"Laki-laki":"Perempuan"}</p></div>
+                </div></td>
+                <td><span class="badge ${getDivisiClass(a.divisi)}">${esc(a.divisi)}</span></td>
+                <td><p style="font-size:12.5px;">${esc(a.telepon)}</p><p style="font-size:12px;color:#888;">${esc(a.email)}</p></td>
+                <td style="font-size:13px;">${esc(a.angkatan)}</td>
+                <td><span class="badge ${getBadgeClass(a.status)}">${esc(a.status)}</span></td>
+                <td><div style="display:flex;gap:4px;">
+                  <button class="btn btn-icon btn-outline btn-sm" data-view="${a.id}" title="Lihat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  ${isAdmin()?`<button class="btn btn-icon btn-outline btn-sm" data-edit="${a.id}" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                  <button class="btn btn-icon btn-danger btn-sm" data-del="${a.id}" title="Hapus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`:""}
+                </div></td>
+              </tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderAnggotaDetail() {
+  const a = anggotaData.find(x=>x.id===anggotaViewId);
+  if(!a) return "";
+  return `
+  <button class="back-btn" id="back-anggota">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    Kembali ke Daftar Anggota
+  </button>
+  <div class="card">
+    <div class="card-body">
+      <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+        <div class="avatar xl" style="background:var(--grad);">${esc(a.avatar)}</div>
+        <div style="flex:1;">
+          <h2 style="font-size:22px;font-weight:800;color:#3b2080;">${esc(a.nama)}</h2>
+          <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
+            <span class="badge ${getDivisiClass(a.divisi)}">${esc(a.divisi)}</span>
+            <span class="badge ${getBadgeClass(a.status)}">${esc(a.status)}</span>
+            <span style="font-size:12px;color:#888;">Angkatan ${esc(a.angkatan)}</span>
+          </div>
+          <div class="detail-grid">
+            ${[["NIK",a.nik],["TTL",a.ttl],["Telepon",a.telepon],["Email",a.email],["Alamat",a.alamat],["Gender",a.gender==="L"?"Laki-laki":"Perempuan"]].map(([k,v])=>`
+            <div>
+              <p style="font-size:11px;color:#9d87ff;font-weight:600;">${k}</p>
+              <p style="font-size:13.5px;color:#333;margin-top:2px;">${esc(v||"-")}</p>
+            </div>`).join("")}
+          </div>
+        </div>
+        ${isAdmin()?`<button class="btn btn-outline btn-sm" id="btn-edit-detail-anggota">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit</button>`:""}
+      </div>
+    </div>
+  </div>`;
+}
+
+function bindAnggota() {
+  const c = document.getElementById("main-content");
+
+  const srch=c.querySelector("#anggota-search");
+  if(srch) srch.addEventListener("input",e=>{anggotaSearch=e.target.value;c.innerHTML=renderAnggota();bindAnggota();});
+
+  const div=c.querySelector("#anggota-div");
+  if(div) div.addEventListener("change",e=>{anggotaFilterDiv=e.target.value;c.innerHTML=renderAnggota();bindAnggota();});
+
+  const stat=c.querySelector("#anggota-stat");
+  if(stat) stat.addEventListener("change",e=>{anggotaFilterStat=e.target.value;c.innerHTML=renderAnggota();bindAnggota();});
+
+  const addBtn=c.querySelector("#btn-add-anggota");
+  if(addBtn) addBtn.addEventListener("click",()=>showAnggotaModal("add",{}));
+
+  c.querySelectorAll("[data-view]").forEach(btn=>{
+    btn.addEventListener("click",()=>{anggotaViewId=parseInt(btn.dataset.view);c.innerHTML=renderAnggotaDetail();bindAnggota();});
+  });
+  c.querySelectorAll("[data-edit]").forEach(btn=>{
+    btn.addEventListener("click",()=>{const a=anggotaData.find(x=>x.id===parseInt(btn.dataset.edit));showAnggotaModal("edit",a);});
+  });
+  c.querySelectorAll("[data-del]").forEach(btn=>{
+    btn.addEventListener("click",()=>{anggotaData=anggotaData.filter(x=>x.id!==parseInt(btn.dataset.del));toast("Anggota dihapus");c.innerHTML=renderAnggota();bindAnggota();});
+  });
+
+  const back=c.querySelector("#back-anggota");
+  if(back) back.addEventListener("click",()=>{anggotaViewId=null;c.innerHTML=renderAnggota();bindAnggota();});
+
+  const editDetail=c.querySelector("#btn-edit-detail-anggota");
+  if(editDetail) editDetail.addEventListener("click",()=>{const a=anggotaData.find(x=>x.id===anggotaViewId);anggotaViewId=null;showAnggotaModal("edit",a);});
+}
+
+function showAnggotaModal(mode, data) {
+  const f = {...data};
+  showModal(`
+  <div class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header"><h3>${mode==="add"?"Tambah Anggota":"Edit Anggota"}</h3>
+        <button class="btn btn-icon btn-outline" id="modal-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group"><label>Nama Lengkap *</label><input class="form-control" id="f-nama" value="${esc(f.nama||"")}" /></div>
+          <div class="form-group"><label>NIK</label><input class="form-control" id="f-nik" value="${esc(f.nik||"")}" /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Tempat, Tanggal Lahir</label><input class="form-control" id="f-ttl" value="${esc(f.ttl||"")}" placeholder="Jakarta, 01-01-2000" /></div>
+          <div class="form-group"><label>Gender</label>
+            <select class="form-control" id="f-gender">
+              <option value="L"${(f.gender||"L")==="L"?" selected":""}>Laki-laki</option>
+              <option value="P"${f.gender==="P"?" selected":""}>Perempuan</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label>Alamat</label><textarea class="form-control" id="f-alamat" rows="2">${esc(f.alamat||"")}</textarea></div>
+        <div class="form-row">
+          <div class="form-group"><label>Telepon</label><input class="form-control" id="f-telepon" value="${esc(f.telepon||"")}" /></div>
+          <div class="form-group"><label>Email</label><input class="form-control" id="f-email" value="${esc(f.email||"")}" /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Divisi</label>
+            <select class="form-control" id="f-divisi">
+              ${DIVISI_LIST.map(d=>`<option value="${d}"${(f.divisi||"Dakwah")===d?" selected":""}>${d}</option>`).join("")}
+            </select>
+          </div>
+          <div class="form-group"><label>Angkatan</label>
+            <select class="form-control" id="f-angkatan">
+              ${["2020","2021","2022","2023","2024","2025"].map(y=>`<option value="${y}"${(f.angkatan||"2025")===y?" selected":""}>${y}</option>`).join("")}
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label>Status</label>
+          <select class="form-control" id="f-status">
+            <option value="Aktif"${(f.status||"Aktif")==="Aktif"?" selected":""}>Aktif</option>
+            <option value="Alumni"${f.status==="Alumni"?" selected":""}>Alumni</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="modal-cancel">Batal</button>
+        <button class="btn btn-primary" id="modal-save">Simpan</button>
+      </div>
+    </div>
+  </div>`);
+
+  document.getElementById("modal-close").addEventListener("click",closeModal);
+  document.getElementById("modal-cancel").addEventListener("click",closeModal);
+  document.getElementById("modal-save").addEventListener("click",()=>{
+    const nama=document.getElementById("f-nama").value;
+    if(!nama){toast("Nama wajib diisi","error");return;}
+    const entry={
+      id: mode==="add"?Date.now():f.id,
+      nama, nik:document.getElementById("f-nik").value,
+      ttl:document.getElementById("f-ttl").value,
+      gender:document.getElementById("f-gender").value,
+      alamat:document.getElementById("f-alamat").value,
+      telepon:document.getElementById("f-telepon").value,
+      email:document.getElementById("f-email").value,
+      divisi:document.getElementById("f-divisi").value,
+      angkatan:document.getElementById("f-angkatan").value,
+      status:document.getElementById("f-status").value,
+      avatar: mode==="add"?nama.split(" ").slice(0,2).map(w=>w[0]).join("").toUpperCase():(f.avatar||"?"),
+      userId: f.userId||null
+    };
+    if(mode==="add"){anggotaData.push(entry);toast("Anggota berhasil ditambahkan");}
+    else{anggotaData=anggotaData.map(x=>x.id===entry.id?entry:x);toast("Data anggota diperbarui");}
+    closeModal();
+    const c=document.getElementById("main-content");
+    c.innerHTML=renderAnggota();bindAnggota();
+  });
+}
+
+// ==================== KEGIATAN ====================
+let kegiatanSearch="";
+
+function renderKegiatan() {
+  const filtered = kegiatanData.filter(k=>
+    k.nama.toLowerCase().includes(kegiatanSearch.toLowerCase())||
+    k.kategori.toLowerCase().includes(kegiatanSearch.toLowerCase())
+  );
+  return `
+  <div class="card">
+    <div class="card-header">
+      <h3>Manajemen Kegiatan (${filtered.length})</h3>
+      ${isAdmin()?`<button class="btn btn-primary btn-sm" id="btn-add-kegiatan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Tambah Kegiatan</button>`:""}
+    </div>
+    <div class="card-body" style="padding-top:12px;">
+      <div style="margin-bottom:16px;">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="search-input" id="kegiatan-search" placeholder="Cari kegiatan..." value="${esc(kegiatanSearch)}" />
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Kegiatan</th><th>Tanggal & Waktu</th><th>Lokasi</th><th>Pembina</th><th>Kategori</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody>
+            ${filtered.map(k=>{
+              const absCnt=absensiData.filter(a=>a.kegiatanId===k.id).length;
+              return `<tr>
+                <td><p style="font-weight:600;color:#3b2080;">${esc(k.nama)}</p><p style="font-size:12px;color:#aaa;">${esc((k.deskripsi||"").slice(0,40))}...</p></td>
+                <td><p style="font-size:13px;">${formatDate(k.tanggal)}</p><p style="font-size:12px;color:#888;">${esc(k.waktu)} WIB</p></td>
+                <td style="font-size:12.5px;">${esc(k.lokasi)}</td>
+                <td style="font-size:12.5px;">${esc(k.pembina)}</td>
+                <td><span class="badge ${getBadgeClass(k.kategori)}">${esc(k.kategori)}</span></td>
+                <td><span class="badge ${getBadgeClass(k.status)}">${esc(k.status)}</span></td>
+                <td><div style="display:flex;gap:4px;">
+                  <button class="btn btn-outline btn-sm" data-absen="${k.id}" title="Absensi">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span style="font-size:11px;">${absCnt}</span>
+                  </button>
+                  ${isAdmin()?`<button class="btn btn-icon btn-outline btn-sm" data-edit="${k.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                  <button class="btn btn-icon btn-danger btn-sm" data-del="${k.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`:""}
+                </div></td>
+              </tr>`;
+            }).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>`;
+}
+
+function bindKegiatan() {
+  const c=document.getElementById("main-content");
+  const srch=c.querySelector("#kegiatan-search");
+  if(srch) srch.addEventListener("input",e=>{kegiatanSearch=e.target.value;c.innerHTML=renderKegiatan();bindKegiatan();});
+
+  const addBtn=c.querySelector("#btn-add-kegiatan");
+  if(addBtn) addBtn.addEventListener("click",()=>showKegiatanModal("add",{}));
+
+  c.querySelectorAll("[data-absen]").forEach(btn=>{
+    btn.addEventListener("click",()=>{const k=kegiatanData.find(x=>x.id===parseInt(btn.dataset.absen));showAbsensiModal(k);});
+  });
+  c.querySelectorAll("[data-edit]").forEach(btn=>{
+    btn.addEventListener("click",()=>{const k=kegiatanData.find(x=>x.id===parseInt(btn.dataset.edit));showKegiatanModal("edit",k);});
+  });
+  c.querySelectorAll("[data-del]").forEach(btn=>{
+    btn.addEventListener("click",()=>{kegiatanData=kegiatanData.filter(x=>x.id!==parseInt(btn.dataset.del));toast("Kegiatan dihapus");c.innerHTML=renderKegiatan();bindKegiatan();});
+  });
+}
+
+function showKegiatanModal(mode, data) {
+  const f={...data};
+  showModal(`
+  <div class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header"><h3>${mode==="add"?"Tambah Kegiatan":"Edit Kegiatan"}</h3>
+        <button class="btn btn-icon btn-outline" id="modal-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group"><label>Nama Kegiatan *</label><input class="form-control" id="fk-nama" value="${esc(f.nama||"")}" /></div>
+        <div class="form-row">
+          <div class="form-group"><label>Tanggal *</label><input type="date" class="form-control" id="fk-tanggal" value="${esc(f.tanggal||"")}" /></div>
+          <div class="form-group"><label>Waktu</label><input type="time" class="form-control" id="fk-waktu" value="${esc(f.waktu||"")}" /></div>
+        </div>
+        <div class="form-group"><label>Lokasi</label><input class="form-control" id="fk-lokasi" value="${esc(f.lokasi||"")}" /></div>
+        <div class="form-group"><label>Deskripsi</label><textarea class="form-control" id="fk-deskripsi" rows="2">${esc(f.deskripsi||"")}</textarea></div>
+        <div class="form-row">
+          <div class="form-group"><label>Kategori</label>
+            <select class="form-control" id="fk-kategori">
+              ${KATEGORI_KEGIATAN.map(k=>`<option value="${k}"${(f.kategori||"Kajian")===k?" selected":""}>${k}</option>`).join("")}
+            </select>
+          </div>
+          <div class="form-group"><label>Status</label>
+            <select class="form-control" id="fk-status">
+              <option value="Akan Datang"${(f.status||"Akan Datang")==="Akan Datang"?" selected":""}>Akan Datang</option>
+              <option value="Selesai"${f.status==="Selesai"?" selected":""}>Selesai</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label>Pembina</label><input class="form-control" id="fk-pembina" value="${esc(f.pembina||"")}" /></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="modal-cancel">Batal</button>
+        <button class="btn btn-primary" id="modal-save">Simpan</button>
+      </div>
+    </div>
+  </div>`);
+
+  document.getElementById("modal-close").addEventListener("click",closeModal);
+  document.getElementById("modal-cancel").addEventListener("click",closeModal);
+  document.getElementById("modal-save").addEventListener("click",()=>{
+    const nama=document.getElementById("fk-nama").value;
+    const tanggal=document.getElementById("fk-tanggal").value;
+    if(!nama||!tanggal){toast("Nama & tanggal wajib diisi","error");return;}
+    const entry={
+      id:mode==="add"?Date.now():f.id, nama, tanggal,
+      waktu:document.getElementById("fk-waktu").value,
+      lokasi:document.getElementById("fk-lokasi").value,
+      deskripsi:document.getElementById("fk-deskripsi").value,
+      kategori:document.getElementById("fk-kategori").value,
+      status:document.getElementById("fk-status").value,
+      pembina:document.getElementById("fk-pembina").value,
+    };
+    if(mode==="add"){kegiatanData.push(entry);toast("Kegiatan berhasil ditambahkan");}
+    else{kegiatanData=kegiatanData.map(x=>x.id===entry.id?entry:x);toast("Kegiatan diperbarui");}
+    closeModal();
+    const c=document.getElementById("main-content");
+    c.innerHTML=renderKegiatan();bindKegiatan();
+  });
+}
+
+let absenMap = {};
+function showAbsensiModal(k) {
+  const aktif=anggotaData.filter(a=>a.status==="Aktif");
+  absenMap={};
+  absensiData.filter(a=>a.kegiatanId===k.id).forEach(a=>{absenMap[a.anggotaId]=a.status;});
+  aktif.forEach(a=>{if(!absenMap[a.id])absenMap[a.id]="";});
+
+  function renderCards() {
+    return aktif.map(a=>{
+      const s=absenMap[a.id];
+      const cls=s?s.toLowerCase():"";
+      return `<div class="absensi-card ${cls}" id="ac-${a.id}" style="margin-bottom:8px;">
+        <div class="avatar" style="background:var(--grad);width:32px;height:32px;font-size:11px;">${esc(a.avatar)}</div>
+        <div class="absensi-name">${esc(a.nama)}</div>
+        <div class="absensi-status">
+          ${isAdmin()?`
+            <button class="status-btn h${s==="Hadir"?" sel":""}" data-id="${a.id}" data-s="Hadir">H</button>
+            <button class="status-btn i${s==="Izin"?" sel":""}" data-id="${a.id}" data-s="Izin">I</button>
+            <button class="status-btn a${s==="Alpha"?" sel":""}" data-id="${a.id}" data-s="Alpha">A</button>`
+          :(s?`<span class="badge ${getBadgeClass(s)}">${s}</span>`:`<span style="font-size:12px;color:#aaa;">Belum</span>`)}
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  showModal(`
+  <div class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header"><h3>Absensi: ${esc(k.nama)}</h3>
+        <button class="btn btn-icon btn-outline" id="modal-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div class="modal-body">
+        <div style="background:#f8f7ff;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;">
+          <p><b style="color:#6741d9;">📅</b> ${formatDate(k.tanggal)} · ${esc(k.waktu)} WIB</p>
+          <p style="margin-top:4px;"><b style="color:#6741d9;">📍</b> ${esc(k.lokasi)}</p>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;font-size:12px;">
+          <span style="background:#dcfce7;color:#16a34a;padding:3px 10px;border-radius:20px;font-weight:600;">H = Hadir</span>
+          <span style="background:#fef9c3;color:#ca8a04;padding:3px 10px;border-radius:20px;font-weight:600;">I = Izin</span>
+          <span style="background:#fee2e2;color:#dc2626;padding:3px 10px;border-radius:20px;font-weight:600;">A = Alpha</span>
+        </div>
+        <div id="absensi-list" style="max-height:340px;overflow-y:auto;">${renderCards()}</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="modal-cancel">Tutup</button>
+        ${isAdmin()?`<button class="btn btn-primary" id="modal-save">Simpan Absensi</button>`:""}
+      </div>
+    </div>
+  </div>`);
+
+  document.getElementById("modal-close").addEventListener("click",closeModal);
+  document.getElementById("modal-cancel").addEventListener("click",closeModal);
+
+  function rebindAbsenButtons() {
+    document.querySelectorAll(".status-btn[data-id]").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        absenMap[parseInt(btn.dataset.id)]=btn.dataset.s;
+        document.getElementById("absensi-list").innerHTML=renderCards();
+        rebindAbsenButtons();
+      });
+    });
+  }
+  rebindAbsenButtons();
+
+  const saveBtn=document.getElementById("modal-save");
+  if(saveBtn) saveBtn.addEventListener("click",()=>{
+    absensiData=absensiData.filter(a=>a.kegiatanId!==k.id);
+    Object.entries(absenMap).filter(([,s])=>s!=="").forEach(([id,status])=>{
+      absensiData.push({id:Date.now()+parseInt(id),kegiatanId:k.id,anggotaId:parseInt(id),status,waktuAbsen:status==="Hadir"?new Date().toTimeString().slice(0,5):"-",keterangan:""});
+    });
+    toast("Absensi berhasil disimpan");
+    closeModal();
+  });
+}
+
+// ==================== PRESTASI ====================
+let prestasiSearch="";
+
+function renderPrestasi() {
+  const filtered=prestasiData.filter(p=>{
+    const a=anggotaData.find(x=>x.id===p.anggotaId);
+    return p.nama.toLowerCase().includes(prestasiSearch.toLowerCase())||a?.nama.toLowerCase().includes(prestasiSearch.toLowerCase());
+  });
+  return `
+  <div class="card">
+    <div class="card-header">
+      <h3>Data Prestasi (${filtered.length})</h3>
+      ${isAdmin()?`<button class="btn btn-primary btn-sm" id="btn-add-prestasi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Tambah</button>`:""}
+    </div>
+    <div class="card-body" style="padding-top:12px;">
+      <div style="margin-bottom:16px;">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="search-input" id="prestasi-search" placeholder="Cari prestasi..." value="${esc(prestasiSearch)}" />
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Prestasi</th><th>Anggota</th><th>Kategori</th><th>Tingkat</th><th>Tanggal</th><th>Keterangan</th>${isAdmin()?"<th>Aksi</th>":""}</tr></thead>
+          <tbody>
+            ${filtered.map(p=>{
+              const a=anggotaData.find(x=>x.id===p.anggotaId);
+              return `<tr>
+                <td style="font-weight:600;color:#3b2080;">${esc(p.nama)}</td>
+                <td><div style="display:flex;align-items:center;gap:8px;">
+                  <div class="avatar" style="background:var(--grad);width:28px;height:28px;font-size:10px;">${esc(a?.avatar||"?")}</div>
+                  <span style="font-size:13px;">${esc(a?.nama||"-")}</span>
+                </div></td>
+                <td><span class="badge ${getBadgeClass(p.kategori)}">${esc(p.kategori)}</span></td>
+                <td><span class="badge ${getBadgeClass(p.tingkat)}">${esc(p.tingkat)}</span></td>
+                <td style="font-size:13px;">${formatDate(p.tanggal)}</td>
+                <td style="font-size:12.5px;color:#666;">${esc(p.keterangan||"-")}</td>
+                ${isAdmin()?`<td><div style="display:flex;gap:4px;">
+                  <button class="btn btn-icon btn-outline btn-sm" data-edit="${p.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                  <button class="btn btn-icon btn-danger btn-sm" data-del="${p.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+                </div></td>`:""}
+              </tr>`;
+            }).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>`;
+}
+
+function bindPrestasi() {
+  const c=document.getElementById("main-content");
+  const srch=c.querySelector("#prestasi-search");
+  if(srch) srch.addEventListener("input",e=>{prestasiSearch=e.target.value;c.innerHTML=renderPrestasi();bindPrestasi();});
+  const addBtn=c.querySelector("#btn-add-prestasi");
+  if(addBtn) addBtn.addEventListener("click",()=>showPrestasiModal("add",{}));
+  c.querySelectorAll("[data-edit]").forEach(btn=>{
+    btn.addEventListener("click",()=>{const p=prestasiData.find(x=>x.id===parseInt(btn.dataset.edit));showPrestasiModal("edit",p);});
+  });
+  c.querySelectorAll("[data-del]").forEach(btn=>{
+    btn.addEventListener("click",()=>{prestasiData=prestasiData.filter(x=>x.id!==parseInt(btn.dataset.del));toast("Prestasi dihapus");c.innerHTML=renderPrestasi();bindPrestasi();});
+  });
+}
+
+function showPrestasiModal(mode, data) {
+  const f={...data};
+  showModal(`
+  <div class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header"><h3>${mode==="add"?"Tambah Prestasi":"Edit Prestasi"}</h3>
+        <button class="btn btn-icon btn-outline" id="modal-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group"><label>Nama Prestasi *</label><input class="form-control" id="fp-nama" value="${esc(f.nama||"")}" /></div>
+        <div class="form-group"><label>Anggota *</label>
+          <select class="form-control" id="fp-anggota">
+            <option value="">-- Pilih Anggota --</option>
+            ${anggotaData.filter(a=>a.status==="Aktif").map(a=>`<option value="${a.id}"${String(f.anggotaId)===String(a.id)?" selected":""}>${esc(a.nama)}</option>`).join("")}
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Kategori</label>
+            <select class="form-control" id="fp-kategori">
+              ${["Keagamaan","Seni","Akademik","Olahraga","Kepemimpinan","Lainnya"].map(k=>`<option value="${k}"${(f.kategori||"Keagamaan")===k?" selected":""}>${k}</option>`).join("")}
+            </select>
+          </div>
+          <div class="form-group"><label>Tingkat</label>
+            <select class="form-control" id="fp-tingkat">
+              ${["Kecamatan","Kota","Provinsi","Nasional","Internasional"].map(t=>`<option value="${t}"${(f.tingkat||"Kecamatan")===t?" selected":""}>${t}</option>`).join("")}
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label>Tanggal</label><input type="date" class="form-control" id="fp-tanggal" value="${esc(f.tanggal||"")}" /></div>
+        <div class="form-group"><label>Keterangan</label><textarea class="form-control" id="fp-ket" rows="2">${esc(f.keterangan||"")}</textarea></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="modal-cancel">Batal</button>
+        <button class="btn btn-primary" id="modal-save">Simpan</button>
+      </div>
+    </div>
+  </div>`);
+
+  document.getElementById("modal-close").addEventListener("click",closeModal);
+  document.getElementById("modal-cancel").addEventListener("click",closeModal);
+  document.getElementById("modal-save").addEventListener("click",()=>{
+    const nama=document.getElementById("fp-nama").value;
+    const anggotaId=document.getElementById("fp-anggota").value;
+    if(!nama||!anggotaId){toast("Nama dan anggota wajib diisi","error");return;}
+    const entry={
+      id:mode==="add"?Date.now():f.id,
+      nama, anggotaId:parseInt(anggotaId),
+      kategori:document.getElementById("fp-kategori").value,
+      tingkat:document.getElementById("fp-tingkat").value,
+      tanggal:document.getElementById("fp-tanggal").value,
+      keterangan:document.getElementById("fp-ket").value,
+    };
+    if(mode==="add"){prestasiData.push(entry);toast("Prestasi ditambahkan");}
+    else{prestasiData=prestasiData.map(x=>x.id===entry.id?entry:x);toast("Prestasi diperbarui");}
+    closeModal();
+    const c=document.getElementById("main-content");
+    c.innerHTML=renderPrestasi();bindPrestasi();
+  });
+}
+
+// ==================== LAPORAN ====================
+function renderLaporan() {
+  const kegiatanSelesai=kegiatanData.filter(k=>k.status==="Selesai");
+  const partisipasi=kegiatanSelesai.map(k=>{
+    const abs=absensiData.filter(a=>a.kegiatanId===k.id);
+    const hadir=abs.filter(a=>a.status==="Hadir").length;
+    const izin=abs.filter(a=>a.status==="Izin").length;
+    const alpha=abs.filter(a=>a.status==="Alpha").length;
+    const pct=abs.length>0?Math.round((hadir/abs.length)*100):0;
+    return{...k,hadir,izin,alpha,total:abs.length,pct};
+  });
+  const anggotaStat=anggotaData.filter(a=>a.status==="Aktif").map(a=>{
+    const myAbs=absensiData.filter(ab=>ab.anggotaId===a.id);
+    const hadir=myAbs.filter(ab=>ab.status==="Hadir").length;
+    const pct=myAbs.length>0?Math.round((hadir/myAbs.length)*100):0;
+    return{...a,hadirCount:hadir,totalKegiatan:myAbs.length,pct};
+  }).sort((a,b)=>b.pct-a.pct);
+
+  return `
+  <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+    <button class="btn btn-primary" id="btn-backup">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Backup Data JSON
+    </button>
+  </div>
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-header"><h3>Laporan Partisipasi per Kegiatan</h3></div>
+    <div class="card-body">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Kegiatan</th><th>Tanggal</th><th>Hadir</th><th>Izin</th><th>Alpha</th><th>Total</th><th>Tingkat Partisipasi</th></tr></thead>
+          <tbody>
+            ${partisipasi.map(k=>`
+            <tr>
+              <td style="font-weight:600;color:#3b2080;">${esc(k.nama)}</td>
+              <td style="font-size:13px;">${formatDate(k.tanggal)}</td>
+              <td><span class="badge hadir">${k.hadir}</span></td>
+              <td><span class="badge izin">${k.izin}</span></td>
+              <td><span class="badge alpha">${k.alpha}</span></td>
+              <td style="font-size:13px;font-weight:600;">${k.total}</td>
+              <td style="min-width:160px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:${k.pct}%"></div></div>
+                  <span style="font-size:13px;font-weight:700;color:#6741d9;width:36px;">${k.pct}%</span>
+                </div>
+              </td>
+            </tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><h3>Laporan Kehadiran per Anggota</h3></div>
+    <div class="card-body">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Anggota</th><th>Divisi</th><th>Kegiatan Diikuti</th><th>Hadir</th><th>Tingkat Kehadiran</th></tr></thead>
+          <tbody>
+            ${anggotaStat.map((a,i)=>`
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:11px;color:#aaa;width:20px;">${i+1}.</span>
+                <div class="avatar" style="background:var(--grad);width:30px;height:30px;font-size:10px;">${esc(a.avatar)}</div>
+                <span style="font-weight:600;color:#3b2080;">${esc(a.nama)}</span>
+              </div></td>
+              <td><span class="badge ${getDivisiClass(a.divisi)}">${esc(a.divisi)}</span></td>
+              <td style="text-align:center;font-size:13px;">${a.totalKegiatan}</td>
+              <td style="text-align:center;font-size:13px;font-weight:600;color:#16a34a;">${a.hadirCount}</td>
+              <td style="min-width:160px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:${a.pct}%"></div></div>
+                  <span style="font-size:13px;font-weight:700;color:#6741d9;width:36px;">${a.pct}%</span>
+                </div>
+              </td>
+            </tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>`;
+}
+
+function bindLaporan() {
+  document.getElementById("btn-backup").addEventListener("click",()=>{
+    const data={anggota:anggotaData,kegiatan:kegiatanData,absensi:absensiData,prestasi:prestasiData,exportedAt:new Date().toISOString()};
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;a.download=`backup-remas-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();URL.revokeObjectURL(url);
+    toast("Data berhasil dibackup!");
+  });
+}
+
+// ==================== ARSITEKTUR ====================
+function renderArsitektur() {
+  const sections=[
+    {title:"Struktur Folder Backend (Node.js + Express)",content:`remas-backend/
+├── src/
+│   ├── config/
+│   │   ├── database.js      # Koneksi MySQL/PostgreSQL
+│   │   └── env.js           # Environment variables
+│   ├── controllers/
+│   │   ├── authController.js
+│   │   ├── anggotaController.js
+│   │   ├── kegiatanController.js
+│   │   ├── absensiController.js
+│   │   └── prestasiController.js
+│   ├── middleware/
+│   │   ├── auth.js          # JWT verification
+│   │   ├── roleCheck.js     # Admin/Pembina/Anggota guard
+│   │   └── validate.js      # Request validation
+│   ├── models/
+│   │   ├── User.js
+│   │   ├── Anggota.js
+│   │   ├── Kegiatan.js
+│   │   ├── Absensi.js
+│   │   └── Prestasi.js
+│   ├── routes/
+│   │   ├── auth.routes.js
+│   │   ├── anggota.routes.js
+│   │   ├── kegiatan.routes.js
+│   │   ├── absensi.routes.js
+│   │   └── prestasi.routes.js
+│   ├── services/
+│   │   ├── emailService.js  # Nodemailer
+│   │   └── backupService.js
+│   └── app.js               # Express entry point
+├── migrations/              # DB migrations
+├── .env
+└── package.json`},
+    {title:"Skema Database (SQL)",content:`-- Tabel users (admin & pembina)
+CREATE TABLE users (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  username VARCHAR(50) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  role ENUM('admin','pembina','anggota') DEFAULT 'anggota',
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  jabatan VARCHAR(100),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabel anggota
+CREATE TABLE anggota (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  user_id INT REFERENCES users(id),
+  nama VARCHAR(100) NOT NULL,
+  nik VARCHAR(16) UNIQUE,
+  ttl VARCHAR(100),
+  alamat TEXT,
+  telepon VARCHAR(20),
+  email VARCHAR(100),
+  divisi ENUM('Dakwah','Sosial','Olahraga','Seni','Pendidikan','Humas'),
+  angkatan YEAR,
+  status ENUM('Aktif','Alumni') DEFAULT 'Aktif',
+  gender ENUM('L','P'),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabel kegiatan
+CREATE TABLE kegiatan (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  nama VARCHAR(200) NOT NULL,
+  tanggal DATE NOT NULL,
+  waktu TIME,
+  lokasi VARCHAR(200),
+  deskripsi TEXT,
+  kategori ENUM('Kajian','Sosial','Rapat','Seni','Olahraga','Lainnya'),
+  status ENUM('Akan Datang','Selesai') DEFAULT 'Akan Datang',
+  pembina_id INT REFERENCES users(id),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabel absensi (relasi many-to-many)
+CREATE TABLE absensi (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  kegiatan_id INT NOT NULL REFERENCES kegiatan(id) ON DELETE CASCADE,
+  anggota_id INT NOT NULL REFERENCES anggota(id) ON DELETE CASCADE,
+  status ENUM('Hadir','Izin','Alpha') NOT NULL,
+  waktu_absen TIME,
+  keterangan TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY unique_absen (kegiatan_id, anggota_id)
+);
+
+-- Tabel prestasi
+CREATE TABLE prestasi (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  anggota_id INT NOT NULL REFERENCES anggota(id) ON DELETE CASCADE,
+  nama VARCHAR(200) NOT NULL,
+  tanggal DATE,
+  kategori VARCHAR(100),
+  tingkat ENUM('Kecamatan','Kota','Provinsi','Nasional','Internasional'),
+  keterangan TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);`},
+    {title:"API Endpoints",content:`# AUTH
+POST   /api/auth/login          # Login & dapatkan JWT token
+POST   /api/auth/logout         # Logout (invalidate token)
+GET    /api/auth/me             # Data user saat ini
+
+# ANGGOTA (Admin/Pembina only untuk CUD)
+GET    /api/anggota             # Daftar semua anggota
+POST   /api/anggota             # Tambah anggota baru [ADMIN]
+GET    /api/anggota/:id         # Detail anggota
+PUT    /api/anggota/:id         # Update data anggota [ADMIN]
+DELETE /api/anggota/:id         # Hapus anggota [ADMIN]
+
+# KEGIATAN
+GET    /api/kegiatan            # Daftar kegiatan
+POST   /api/kegiatan            # Buat kegiatan baru [ADMIN]
+GET    /api/kegiatan/:id        # Detail kegiatan + daftar hadir
+PUT    /api/kegiatan/:id        # Update kegiatan [ADMIN]
+DELETE /api/kegiatan/:id        # Hapus kegiatan [ADMIN]
+GET    /api/kegiatan/mendatang  # Kegiatan yang akan datang
+
+# ABSENSI (Mencegah absensi ganda via UNIQUE constraint)
+GET    /api/absensi/:kegiatanId # Daftar absensi per kegiatan
+POST   /api/absensi             # Input absensi [ADMIN/PEMBINA]
+PUT    /api/absensi/:id         # Update status absensi [ADMIN]
+GET    /api/absensi/anggota/:id # Rekap kehadiran per anggota
+
+# PRESTASI
+GET    /api/prestasi            # Daftar prestasi
+POST   /api/prestasi            # Tambah prestasi [ADMIN]
+PUT    /api/prestasi/:id        # Edit prestasi [ADMIN]
+DELETE /api/prestasi/:id        # Hapus prestasi [ADMIN]
+
+# LAPORAN
+GET    /api/laporan/partisipasi # Laporan tingkat partisipasi
+GET    /api/laporan/kehadiran   # Rekap kehadiran per anggota
+GET    /api/laporan/backup      # Export data JSON [ADMIN]`},
+    {title:"Sample Controller: Absensi (validasi ganda)",content:`// controllers/absensiController.js
+const db = require('../config/database');
+
+// Input absensi (batch untuk 1 kegiatan)
+exports.inputAbsensi = async (req, res) => {
+  const { kegiatan_id, absensi_list } = req.body;
+  // absensi_list: [{anggota_id, status, keterangan}, ...]
+
+  const conn = await db.getConnection();
+  await conn.beginTransaction();
+  try {
+    for (const item of absensi_list) {
+      // INSERT ... ON DUPLICATE KEY UPDATE mencegah duplikasi
+      await conn.query(\`
+        INSERT INTO absensi (kegiatan_id, anggota_id, status, keterangan, waktu_absen)
+        VALUES (?, ?, ?, ?, NOW())
+        ON DUPLICATE KEY UPDATE
+          status = VALUES(status),
+          keterangan = VALUES(keterangan)
+      \`, [kegiatan_id, item.anggota_id, item.status, item.keterangan || '']);
+    }
+    await conn.commit();
+    res.json({ success: true, message: 'Absensi berhasil disimpan' });
+  } catch (err) {
+    await conn.rollback();
+    res.status(500).json({ error: err.message });
+  } finally {
+    conn.release();
+  }
+};
+
+// middleware/roleCheck.js
+exports.adminOnly = (req, res, next) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ error: 'Akses ditolak: hanya Admin' });
+  }
+  next();
+};
+
+exports.adminOrPembina = (req, res, next) => {
+  if (!['admin', 'pembina'].includes(req.user.role)) {
+    return res.status(403).json({ error: 'Akses ditolak' });
+  }
+  next();
+};`}
+  ];
+  return `
+  <div class="alert alert-info" style="margin-bottom:20px;">
+    ℹ️ Berikut adalah arsitektur backend lengkap untuk Sistem Manajemen Remaja Masjid
+  </div>
+  ${sections.map(s=>`
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-header"><h3>${esc(s.title)}</h3></div>
+    <div class="card-body">
+      <pre class="code-block">${esc(s.content)}</pre>
+    </div>
+  </div>`).join("")}`;
+}
+</script>
+</body>
+</html>
